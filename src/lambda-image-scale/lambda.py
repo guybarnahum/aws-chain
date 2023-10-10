@@ -4,6 +4,7 @@ aws lambda handler entry point
 import json
 import logging
 import os
+import replicate
 
 if logging.getLogger().hasHandlers():
     # The Lambda environment pre-configures a handler logging to stderr.
@@ -90,7 +91,12 @@ def process_one_job(job):
 
     logger.info("manifest", manifest)
 
-    res = {"manifest": manifest_path }
+    if manifest:
+        output = process_job_manifest(manifest)
+        res = {"manifest": manifest, "output": output}
+    else:
+        res = {}
+
     logger.info("process_one_job res: %s", res)
     return res
 
@@ -99,3 +105,22 @@ def process_one_job_get_manifest(job):
     Not implemented yet - move to lambda_units?!    
     """
     ...
+
+def process_job_manifest(manifest):
+
+    token = SecretManager.setup_os_env("replicate-api-token", env_variable="REPLICATE_API_TOKEN")
+    if not token:
+        logger.error("REPLICATE_API_TOKEN is required")
+        return {}
+    
+    logger.info("REPLICATE_API_TOKEN set - %s", token)
+    
+    output = replicate.run(
+        "xinntao/realesrgan:1b976a4d456ed9e4d1a846597b7614e79eadad3032e9124fa63859db0fd59b56",
+        input={"img": open("./test.jpg", "rb")}
+    )
+
+    print(manifest)
+    print(output)
+
+    return output
