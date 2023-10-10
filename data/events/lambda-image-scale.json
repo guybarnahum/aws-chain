@@ -1,0 +1,34 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Event"
+    },
+    "paths": {},
+    "components": {
+        "schemas": {
+            "Event": {
+                "type": "object"
+            }
+        },
+        "examples": {
+            "manifest-event": {
+                "value": {
+                    "LLM": {
+                        "engine": "openai",
+                        "options": {
+                            "temperature": 0.5
+                        }
+                    },
+                    "Records": [{
+                        "s3-test": true,
+                        "eventSource": "aws:s3",
+                        "eventName": "ObjectCreated:Put",
+                        "s3ObjectKey": "job-test-event.json",
+                        "s3BucketName": "lambda-image-scale-bucket-us-west-2"
+                    }]
+                }
+            }
+        }
+    }
+}

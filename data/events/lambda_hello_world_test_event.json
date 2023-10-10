@@ -1,0 +1,14 @@
+{
+    "openapi": "3.0.0",
+    "info": { "version": "1.0.0", "title": "Event" },
+    "paths": {},
+    "components": {
+        "schemas": { "Event": { "type": "object" } },
+        "examples": {
+            "empty-event": { "value": {} },
+            "hello-world-event": {
+                "value": { "key1": "value1", "key2": "value2", "key3": "value3" }
+            }
+        }
+    }
+}

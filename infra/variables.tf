@@ -43,14 +43,10 @@ variable "lambda_layers" {
     runtimes = list(string)
   }))
   default = {
-    "openai" = {
-      src_zip  = "src/artifacts/lambda_layers/openai-aws-lambda-layer-python3.11.zip"
-      src_dir  = ""
-      runtimes = ["python3.11"]
-    },
+
     "lambda_utils" = {
       src_zip  = "src/artifacts/lambda_layers/lambda-utils-aws-lambda-layer-python3.11.zip"
-      src_dir  = "src/lambda_utils/"
+      src_dir  = "src/lambda_utils/python"
       runtimes = ["python3.11"]
     }
   }
@@ -72,16 +68,16 @@ variable "lambdas" {
   }))
 
   default = {
-    "langchain_vectordb" = { #<-- same basename as trigger resource
-      src_dir     = "src/lambda_langchain_vectordb",
+    "lambda_image_scale" = { #<-- same basename as trigger resource
+      src_dir     = "src/lambda-image-scale",
       ecr_image   = true,
       handler     = "lambda.lambda_handler",
-      name        = "langchain-vectordb-lambda", # lowercase + hyphens only
+      name        = "lambda-image-scale", # lowercase + hyphens only
       trigger     = ["s3_event"],
       tags        = { Name = "S3 Event", Environment = "Dev" }
-      layers      = []
+      layers      = [ lambda_utils ]
       layers_arns = []
-      test_event  = "data/events/lambda_langchain_vectordb.json"
+      test_event  = "data/events/lambda_image_scale_test_event.json"
     }
   }
 }

@@ -1,0 +1,18 @@
+{
+    "lambda" : "lambda-image-scale",
+
+    "Records": [{
+        
+        "input": "lambda-image-scale-bucket-us-west-2/job-test-event-input-image.jpg",
+        "output": "lambda-image-scale-bucket-us-west-2/job-test-event-output-image.jpg",
+        "force" : false,
+        
+        "api"   : "xcr",
+        "args"  : {
+            "dpi" : 300,
+            "width-inch": 20,
+            "height-inch": 16,
+            "keep-ratio" : true
+        }
+    }] 
+}
