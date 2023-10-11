@@ -66,53 +66,50 @@ ifneq ($(install_landscape),"true")
 endif
 ifneq ($(install_pre_commit),"true")
 	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade pre-commit
+	pre-commit install --allow-missing-config
 endif
-	terraform init $(RUN_ARGS)
+	terraform -chdir=infra init $(RUN_ARGS)
 
 .PHONY: lint
-lint: ## Lint check HCL code
-	terraform fmt -check $(RUN_ARGS)
-
-.PHONY: hcl-fmt
-hcl-fmt: ## Lint HCL code
+lint: ## Lint HCL code
 	pre-commit run --all-files
-	terraform fmt $(RUN_ARGS)
+	terraform -chdir=infra fmt -check $(RUN_ARGS)
 
 .PHONY: validate
 validate: ## Basic syntax check
-	terraform validate $(RUN_ARGS)
+	terraform -chdir=infra validate $(RUN_ARGS)
 
 .PHONY: show
 show: ## List infra resources
-	terraform show $(RUN_ARGS)| landscape
+	terraform -chdir=infra show $(RUN_ARGS)| landscape
 
 .PHONY: refresh
 refresh: ## Refresh infra resources
-	terraform refresh $(RUN_ARGS)
+	terraform -chdir=infra refresh $(RUN_ARGS)
 
 .PHONY: console
 console: ## Console infra resources
-	terraform console $(RUN_ARGS)
+	terraform -chdir=infra console $(RUN_ARGS)
 
 .PHONY: import
 import: ## Import infra resources
-	terraform import $(RUN_ARGS)
+	terraform -chdir=infra import $(RUN_ARGS)
 
 .PHONY: taint
 taint: ## Taint infra resources
-	terraform taint $(RUN_ARGS)
+	terraform -chdir=infra taint $(RUN_ARGS)
 
 .PHONY: untaint
 untaint: ## Untaint infra resources
-	terraform untaint $(RUN_ARGS)
+	terraform -chdir=infra untaint $(RUN_ARGS)
 
 .PHONY: workspace
 workspace: ## Workspace infra resources
-	terraform workspace
+	terraform -chdir=infra workspace
 
 .PHONY: state
 state: ## Inspect or change the remote state of your resources
-	terraform state $(RUN_ARGS)
+	terraform -chdir=infra state $(RUN_ARGS)
 
 .PHONY: plan
 plan: dry-run
@@ -128,11 +125,11 @@ apply: run
 .PHONY: run
 run: ## Execute resources changes
 	pre-commit run --all-files
-	terraform apply $(RUN_ARGS)
+	terraform -chdir=infra apply $(RUN_ARGS)
 
 .PHONY: destroy
 destroy: # Destroy resources
-	terraform destroy $(RUN_ARGS)
+	terraform -chdir=infra destroy $(RUN_ARGS)
 
 version: ## Output the current version
 	@echo
