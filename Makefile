@@ -27,46 +27,47 @@ endif
 
 help: usage version ## This help
 
-usage: 
+usage:
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
 
 .PHONY: init
-init: install 
+init: install
 
-.PHONY: install 
-install: ## Install terraform 
+.PHONY: install
+install: ## Install terraform
 
 ifeq ($(install_terraform),"true")
 	brew update
 	brew tap hashicorp/tap
-	HOMEBREW_NO_AUTO_UPDATE=1 brew install hashicorp/tap/terraform 
+	HOMEBREW_NO_AUTO_UPDATE=1 brew install hashicorp/tap/terraform
 endif
 ifeq ($(install_landscape),"true")
 	brew tap homebrew/core
-	HOMEBREW_NO_AUTO_UPDATE=1 brew install terraform_landscape 
+	HOMEBREW_NO_AUTO_UPDATE=1 brew install terraform_landscape
 endif
 ifeq ($(install_pre_commit),"true")
-	HOMEBREW_NO_AUTO_UPDATE=1 brew install pre-commit 
+	HOMEBREW_NO_AUTO_UPDATE=1 brew install pre-commit
+	pre-commit install --allow-missing-config
 endif
-	terraform init $(RUN_ARGS)
+	terraform -chdir=infra init $(RUN_ARGS)
 
 .PHONY: upgrade
-upgrade: ## upgrade Installed  
+upgrade: ## upgrade Installed
 ifneq ($(install_terraform),"true")
 	brew update
 	brew tap hashicorp/tap
-	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade hashicorp/tap/terraform 
+	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade hashicorp/tap/terraform
 endif
 ifneq ($(install_landscape),"true")
 	brew tap homebrew/core
-	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade terraform_landscape 
+	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade terraform_landscape
 endif
 ifneq ($(install_pre_commit),"true")
-	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade pre-commit 
+	HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade pre-commit
 endif
-	terraform init $(RUN_ARGS)	
+	terraform init $(RUN_ARGS)
 
 .PHONY: lint
 lint: ## Lint check HCL code
@@ -119,10 +120,10 @@ plan: dry-run
 .PHONY: dry-run
 dry-run: ## Dry run resources changes
 	pre-commit run --all-files
-	terraform plan $(RUN_ARGS) | landscape
+	terraform -chdir=infra plan $(RUN_ARGS) | landscape
 
 .PHONY: apply
-apply: run 
+apply: run
 
 .PHONY: run
 run: ## Execute resources changes

@@ -34,6 +34,12 @@ variable "lambda_architectures" {
   description = "cpu architecture type x86_64 / arm64 (affects cost)"
 }
 
+variable "project_dir" {
+  type        = string
+  default     = ".."
+  description = "project base directory relative to the current directory (infra)"
+}
+
 # ............................................................... lambda_layers
 
 variable "lambda_layers" {
@@ -45,8 +51,8 @@ variable "lambda_layers" {
   default = {
 
     "lambda_utils" = {
-      src_zip  = "src/artifacts/lambda_layers/lambda-utils-aws-lambda-layer-python3.11.zip"
-      src_dir  = "src/lambda_utils/python"
+      src_zip  = "artifacts/lambda_layers/lambda-utils-aws-lambda-layer-python3.11.zip"
+      src_dir  = "src/lambda-utils/python"
       runtimes = ["python3.11"]
     }
   }
@@ -75,7 +81,7 @@ variable "lambdas" {
       name        = "lambda-image-scale", # lowercase + hyphens only
       trigger     = ["s3_event"],
       tags        = { Name = "S3 Event", Environment = "Dev" }
-      layers      = [ lambda_utils ]
+      layers      = [ "lambda_utils" ]
       layers_arns = []
       test_event  = "data/events/lambda_image_scale_test_event.json"
     }
@@ -110,170 +116,5 @@ variable "dynamodb_tables" {
   }))
 
   default = {
-
-    "users" = {
-      name     = "user-table"
-      billing  = "PAY_PER_REQUEST"
-      read     = null
-      write    = null
-      hash_key = "email"
-      ttl      = false
-      stream   = false
-
-      attributes = {
-        email     = "S"
-        type_     = "S"
-        active_at = "N"
-      }
-      indexes = {
-        "type-active-index" = {
-          hash_key  = "type_"
-          range_key = "active_at"
-        }
-      }
-      cols = {
-        email      = "S"
-        first_name = "S"
-        last_name  = "S"
-        pass_hash  = "S"
-        type_      = "S"
-        created_at = "N"
-        active_at  = "N"
-      }
-      seed = null
-      tags = {
-        Name        = "dynamoDB table",
-        Environment = "Dev"
-      }
-    },
-
-    "events" = {
-      name     = "event-table"
-      billing  = "PAY_PER_REQUEST"
-      read     = null
-      write    = null
-      hash_key = "id"
-      ttl      = true
-      stream   = false
-
-      attributes = {
-        id         = "S"
-        owner      = "S"
-        created_at = "N"
-      }
-      indexes = {
-        "owner-created-index" = {
-          hash_key  = "owner"
-          range_key = "created_at"
-        }
-      }
-      cols = {
-        id         = "S"
-        owner      = "S"
-        type_      = "S"
-        enabled    = "N"
-        targets    = "S"
-        schedule   = "S"
-        ttl        = "N"
-        created_at = "N"
-      }
-      seed = null
-      tags = {
-        Name        = "dynamoDB table",
-        Environment = "Dev"
-      }
-    },
-
-    "prompts" = {
-      name     = "prompts-table"
-      billing  = "PAY_PER_REQUEST"
-      read     = null
-      write    = null
-      hash_key = "id"
-      ttl      = false
-      stream   = false
-
-      attributes = {
-        id = "S"
-      }
-      indexes = {}
-      cols = {
-        id         = "S"
-        res_id     = "S"
-        task_      = "S"
-        type_      = "S"
-        via_       = "S"
-        template   = "S"
-        actors     = "S"
-        author     = "S"
-        created_at = "N"
-      }
-      seed = "data/seeders/prompts_table_seeder.json"
-      tags = {
-        Name        = "dynamoDB table",
-        Environment = "Dev"
-      }
-    },
-
-    "prompt-lookup" = {
-      name     = "prompt-lookup-table"
-      billing  = "PAY_PER_REQUEST"
-      read     = null
-      write    = null
-      hash_key = "id"
-      ttl      = false
-      stream   = false
-
-      attributes = {
-        id    = "S"
-        task_ = "S"
-        type_ = "S"
-      }
-      indexes = {
-        "task-type" = {
-          hash_key  = "task_"
-          range_key = "type_"
-        }
-      },
-      cols = {
-        id         = "S"
-        prompt_ids = "S"
-        task_      = "S"
-        type_      = "S"
-        via_       = "S"
-      }
-      seed = "data/seeders/prompt_lookup_table_seeder.json"
-      tags = {
-        Name        = "dynamoDB table",
-        Environment = "Dev"
-      }
-    },
-
-    "prompt-results" = {
-      name     = "prompt-results-table"
-      billing  = "PAY_PER_REQUEST"
-      read     = null
-      write    = null
-      hash_key = "id"
-      ttl      = true
-      stream   = true
-
-      attributes = {
-        id = "S"
-      }
-      indexes = {}
-      cols = {
-        id         = "S"
-        prompt_id  = "S"
-        result     = "S"
-        ttl        = "N"
-        created_at = "N"
-      }
-      seed = null
-      tags = {
-        Name        = "dynamoDB table",
-        Environment = "Dev"
-      }
-    },
   }
 }

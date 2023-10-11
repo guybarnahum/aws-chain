@@ -23,13 +23,14 @@ else:
 
 logger = logging.getLogger(__name__)
 
+
 def validate_aws_env():
     """
     Validate AWS lambda "compatible" environment
     Returns: Error String or None for no errors
     """
     err = None
-    
+
     try:
         import boto3
     except ModuleNotFoundError as e:
@@ -45,6 +46,7 @@ def validate_aws_env():
         err = "aws config missing"
 
     return err
+
 
 def sys_path_add(paths):
     """
@@ -65,6 +67,7 @@ sys_path_add(
 )
 
 from misc_utils import set_into_object
+
 
 def load_event_file(event_file, option=None):
     """
@@ -107,15 +110,16 @@ def load_event_file(event_file, option=None):
     logger.debug("event file %s, option %s, event %s", event_file, option, event)
     return event
 
+
 def main():
     """
     aws lambda handler entry point
     """
 
     aws_env_err = validate_aws_env()
-    if aws_env_err :
-        logger.error( aws_env_err )
-        exit();
+    if aws_env_err:
+        logger.error(aws_env_err)
+        exit()
 
     parser = ArgumentParser(
         prog="local-run-lambda",
@@ -160,6 +164,7 @@ def main():
     logger.info("res : %s", res)
 
     logger.info("--- %s sec ---", round(time.time() - start_time, 3))
+
 
 if __name__ == "__main__":
     main()

@@ -14,8 +14,8 @@ COPY lambda.py ${LAMBDA_TASK_ROOT}
 
 # Copy function layers
 RUN mkdir -p /opt
-COPY lambda-utils-aws-lambda-layer-python3.8.zip .
-RUN unzip lambda-utils-aws-lambda-layer-python3.8.zip -d /opt
+COPY lambda-utils-aws-lambda-layer-python3.11.zip .
+RUN unzip lambda-utils-aws-lambda-layer-python3.11.zip -d /opt
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
 CMD [ "lambda.lambda_handler" ]

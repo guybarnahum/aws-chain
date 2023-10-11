@@ -9,7 +9,7 @@ Using Terraform to deploy AWS infra
 
 ## Prerequisits
 
-1. 
+1.
 Obtain [replicate](https://replicate.com) api key from [Replicate API](https://replicate.com/account/api-tokens)
 
 Note the token / secret for deployment

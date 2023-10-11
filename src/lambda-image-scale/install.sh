@@ -44,7 +44,7 @@ pushd $BASEDIR
 # Copy layers into lambda directory for Dockerfile to find
 # Notice: Docker can not access files in parent direcotry, so need to copy and cleanup external code
 #
-cp -R -v ../artifacts/lambda_layers/lambda-utils-aws-lambda-layer-python3.8.zip .
+cp -R -v ../artifacts/lambda_layers/lambda-utils-aws-lambda-layer-python3.11.zip .
 
 aws ecr get-login-password --region $AWS_REGION \
     | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com

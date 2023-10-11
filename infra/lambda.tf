@@ -18,8 +18,8 @@ locals {
 data "archive_file" "lambda_source_code" {
   for_each    = local.lambdas
     type        = "zip"
-    source_dir  = each.value.src_dir
-    output_path = "${each.value.src_dir}/../artifacts/${each.value.name}.zip"
+    source_dir  = "${var.project_dir}/${each.value.src_dir}"
+    output_path = "${var.project_dir}/artifacts/${each.value.name}-${var.lambda_runtime}.zip"
     excludes    = ["__init__.py", "*.pyc", "*.zip","__pycache__","layers"]
 }
 
@@ -32,15 +32,15 @@ resource null_resource ecr_image {
   for_each = local.lambdas_ecr_image
 
   triggers = {
-    python_file = filebase64sha256("${each.value.src_dir}/lambda.py")
-    req_file    = filebase64sha256("${each.value.src_dir}/requirements.txt")
-    docker_file = filebase64sha256("${each.value.src_dir}/Dockerfile")
-    install_file= filebase64sha256("${each.value.src_dir}/install.sh")
+    python_file = filebase64sha256("${var.project_dir}/${each.value.src_dir}/lambda.py")
+    req_file    = filebase64sha256("${var.project_dir}/${each.value.src_dir}/requirements.txt")
+    docker_file = filebase64sha256("${var.project_dir}/${each.value.src_dir}/Dockerfile")
+    install_file= filebase64sha256("${var.project_dir}/${each.value.src_dir}/install.sh")
   }
 
   provisioner "local-exec" {
   command = join(" ", [ "/bin/bash +x",
-                        "${each.value.src_dir}/install.sh",
+                        "${var.project_dir}/${each.value.src_dir}/install.sh",
                         "${aws_ecr_repository.repo[each.key].repository_url}:latest",
                         "${data.aws_caller_identity.current.account_id}",
                         "${data.aws_region.current.name}"
@@ -51,7 +51,7 @@ resource null_resource ecr_image {
 data "local_file" "sha256_digest" {
   for_each = local.lambdas_ecr_image
     depends_on = [null_resource.ecr_image]
-    filename = "${each.value.src_dir}/sha256.digest"
+    filename = "${var.project_dir}/${each.value.src_dir}/sha256.digest"
 }
 
 #
@@ -325,7 +325,7 @@ resource "aws_schemas_schema" "lambda_test_events" {
     registry_name = "lambda-testevent-schemas"
     description   = "The schema definition for shared test events"
     type          = "OpenApi3" # <-- only valid option
-    content       = file(each.value.test_event)
+    content       = file("${var.project_dir}/${each.value.test_event}")
 }
 
 # ............................................................. dynamodb stream

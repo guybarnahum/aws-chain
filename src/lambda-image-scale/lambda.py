@@ -17,13 +17,14 @@ else:
 logger = logging.getLogger(__name__)
 
 #
-# lambda-utils should be in path or included as a lambda layet or 
+# lambda-utils should be in path or included as a lambda layet or
 # as a docker public.ecr.aws/lambda based image in /opt (see Dockerfile).
 #
 from events import s3_event, s3_test_event
 from misc_utils import json_str, zip_path
 from s3 import s3_download, s3_upload
 from secrets_manager import SecretManager
+
 
 def lambda_handler(event, unused_context):
     """
@@ -100,24 +101,28 @@ def process_one_job(job):
     logger.info("process_one_job res: %s", res)
     return res
 
+
 def process_one_job_get_manifest(job):
     """
-    Not implemented yet - move to lambda_units?!    
+    Not implemented yet - move to lambda_units?!
     """
     ...
 
+
 def process_job_manifest(manifest):
 
-    token = SecretManager.setup_os_env("replicate-api-token", env_variable="REPLICATE_API_TOKEN")
+    token = SecretManager.setup_os_env(
+        "replicate-api-token", env_variable="REPLICATE_API_TOKEN"
+    )
     if not token:
         logger.error("REPLICATE_API_TOKEN is required")
         return {}
-    
+
     logger.info("REPLICATE_API_TOKEN set - %s", token)
-    
+
     output = replicate.run(
         "xinntao/realesrgan:1b976a4d456ed9e4d1a846597b7614e79eadad3032e9124fa63859db0fd59b56",
-        input={"img": open("./test.jpg", "rb")}
+        input={"img": open("./test.jpg", "rb")},
     )
 
     print(manifest)
